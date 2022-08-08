@@ -7,12 +7,14 @@ import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInst
 import VisualObjectInstance = powerbi.VisualObjectInstance;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 export declare class Visual implements IVisual {
+    private svgRoot;
     private target;
     private updateCount;
     private settings;
     private valueText;
     constructor(options: VisualConstructorOptions);
     update(options: VisualUpdateOptions): void;
+    private increaseCount;
     private static parseSettings;
     enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject;
 }

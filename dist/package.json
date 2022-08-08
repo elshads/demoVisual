@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "author": {"name":"ApexES","email":"support@apexes.one"},
+    "resources": [
+        {
+            "resourceId": "rId0",
+            "sourceType": 5,
+            "file": "resources/demoVisual1E942F68B1AA413C8431AFCDEDE2DAE2.pbiviz.json"
+        }
+    ],
+    "visual": {"name":"demoVisual","displayName":"DemoVisual","guid":"demoVisual1E942F68B1AA413C8431AFCDEDE2DAE2","visualClassName":"Visual","version":"1.0.0","description":"DemoVisual","supportUrl":"apexes.one","gitHubUrl":""},
+    "metadata": {
+        "pbivizjson": {
+            "resourceId": "rId0"
+        }
+    }  
+}

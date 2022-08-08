@@ -1,0 +1,32 @@
+Toggle switch
+
+themes:
+    PowerBI
+    MaterialUI
+    Bootstrap
+
+labelPosition:
+    off
+    top
+    bottom
+    before
+    after
+    inside
+
+labelPadding:
+    top
+    bottom
+    start
+    end
+
+toggleColor:
+    checkedToggleColor
+    uncheckedToggleColor
+
+barColor:
+    checkedBarColor
+    uncheckedBarColor
+
+labelColor:
+    checkedLabelColor
+    uncheckedLabelColor

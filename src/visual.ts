@@ -9,16 +9,20 @@ import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInst
 import VisualObjectInstance = powerbi.VisualObjectInstance;
 import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+import * as d3 from "d3";
 import { VisualSettings } from "./settings";
 
 export class Visual implements IVisual {
+  private svgRoot: d3.Selection<SVGElement, {}, HTMLElement, any>;
   private target: HTMLElement;
   private updateCount: number;
   private settings: VisualSettings;
   private valueText: Text;
 
   constructor(options: VisualConstructorOptions) {
-    console.log("Visual constructor", options);
+    this.svgRoot = d3.select(options.element).append("svg");
+    
+    
     this.target = options.element;
     this.updateCount = 0;
     if (document) {
@@ -26,12 +30,12 @@ export class Visual implements IVisual {
       mainBody.classList.add("main-body");
 
       const flexWrapper: HTMLElement = document.createElement("div");
-      flexWrapper.classList.add("d-flex");
+      flexWrapper.classList.add("content-wrapper");
 
       const updateButton: HTMLElement = document.createElement("button");
       updateButton.classList.add("button");
       updateButton.appendChild(document.createTextNode("Refresh"));
-      updateButton.addEventListener("click", () => this.update(undefined));
+      updateButton.addEventListener("click", () => this.increaseCount());
 
       const updateCountLabel: HTMLElement = document.createElement("div");
       updateCountLabel.classList.add("label");
@@ -51,10 +55,10 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-    this.settings = Visual.parseSettings(
-      options && options.dataViews && options.dataViews[0]
-    );
-    console.log("Visual update", options);
+    this.increaseCount();
+  }
+
+  private increaseCount() {
     if (this.valueText) {
       this.valueText.textContent = (this.updateCount++).toString();
     }
