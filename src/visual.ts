@@ -5,75 +5,99 @@ import powerbi from "powerbi-visuals-api";
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
-import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
-import DataView = powerbi.DataView;
-import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-import * as d3 from "d3";
+import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import { VisualSettings } from "./settings";
 
 export class Visual implements IVisual {
-  private svgRoot: d3.Selection<SVGElement, {}, HTMLElement, any>;
   private target: HTMLElement;
-  private updateCount: number;
+  private selectionManager: ISelectionManager;
+  private selectedValue: boolean = false;
+  private host: IVisualHost;
+  private isEventUpdate: boolean = false;
   private settings: VisualSettings;
   private valueText: Text;
 
   constructor(options: VisualConstructorOptions) {
-    this.svgRoot = d3.select(options.element).append("svg");
-    
-    
     this.target = options.element;
-    this.updateCount = 0;
-    if (document) {
-      const mainBody: HTMLElement = document.createElement("div");
-      mainBody.classList.add("main-body");
+    this.host = options.host;
+    this.selectionManager = options.host.createSelectionManager();
 
-      const flexWrapper: HTMLElement = document.createElement("div");
-      flexWrapper.classList.add("content-wrapper");
+    // this.target = options.element;
+    // if (document) {
+    //   const switchContainer: HTMLElement = document.createElement("label");
+    //   switchContainer.classList.add("switch");
 
-      const updateButton: HTMLElement = document.createElement("button");
-      updateButton.classList.add("button");
-      updateButton.appendChild(document.createTextNode("Refresh"));
-      updateButton.addEventListener("click", () => this.increaseCount());
+    //   const switchInput: HTMLInputElement = document.createElement("input");
+    //   switchInput.classList.add("checkbox-input");
+    //   switchInput.type = "checkbox";
 
-      const updateCountLabel: HTMLElement = document.createElement("div");
-      updateCountLabel.classList.add("label");
-      updateCountLabel.appendChild(document.createTextNode("Update count:"));
-      const updateCountValue: HTMLElement = document.createElement("div");
-      updateCountValue.classList.add("value");
-      this.valueText = document.createTextNode(this.updateCount.toString());
-      updateCountValue.appendChild(this.valueText);
+    //   const switchSlider: HTMLElement = document.createElement("span");
+    //   switchSlider.classList.add("slider");
+    //   switchSlider.classList.add("round");
 
-      mainBody.appendChild(flexWrapper);
-      mainBody.appendChild(updateButton);
-      flexWrapper.appendChild(updateCountLabel);
-      flexWrapper.appendChild(updateCountValue);
+    //   switchContainer.appendChild(switchInput);
+    //   switchContainer.appendChild(switchSlider);
 
-      this.target.appendChild(mainBody);
-    }
+    //   this.target.appendChild(switchContainer);
+    // }
   }
 
   public update(options: VisualUpdateOptions) {
-    this.increaseCount();
-  }
-
-  private increaseCount() {
-    if (this.valueText) {
-      this.valueText.textContent = (this.updateCount++).toString();
+    if (options.type && !this.isEventUpdate) {
+      this.init(options);
     }
   }
 
-  private static parseSettings(dataView: DataView): VisualSettings {
-    return <VisualSettings>VisualSettings.parse(dataView);
-  }
+  public init(options: VisualUpdateOptions) {
+    if (
+      !options ||
+      !options.dataViews ||
+      !options.dataViews[0] ||
+      !options.dataViews[0].categorical ||
+      !options.dataViews[0].categorical.categories ||
+      !options.dataViews[0].categorical.categories[0]
+    ) {
+      return;
+    }
 
-  public enumerateObjectInstances(
-    options: EnumerateVisualObjectInstancesOptions
-  ): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
-    return VisualSettings.enumerateObjectInstances(
-      this.settings || VisualSettings.getDefault(),
-      options
-    );
+    while (this.target.firstChild) {
+      this.target.removeChild(this.target.firstChild);
+    }
+
+    // clear out any previous selection ids
+    this.selectedValue = false;
+
+    // get the category data.
+    const category = options.dataViews[0].categorical.categories[0];
+    const values = category.values;
+
+    // build selection ids to be used by filtering capabilities later
+    values.forEach((item: number, index: number) => {
+      // this.selectionIds[item] = this.host
+      //   .createSelectionIdBuilder()
+      //   .withCategory(category, index)
+      //   .createSelectionId();
+
+      const value = item.toString();
+
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.value = value;
+      radio.name = "values";
+      radio.onclick = function (ev) {
+        this.isEventUpdate = true; // This is checked in the update method. If true it won't re-render, this prevents and infinite loop
+        this.selectionManager.clear(); // Clean up previous filter before applying another one.
+
+        // Find the selectionId and select it
+        this.selectionManager
+          .select(this.selectedValue);
+
+        // This call applys the previously selected selectionId
+        this.selectionManager.applySelectionFilter();
+      }.bind(this);
+
+      this.target.appendChild(radio);
+    });
   }
 }

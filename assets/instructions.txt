@@ -1,5 +1,9 @@
 Toggle switch
 
+defaultValue:
+    true
+    false
+
 themes:
     PowerBI
     MaterialUI
@@ -19,6 +23,10 @@ labelPadding:
     start
     end
 
+labelFont:
+    font-family
+    font-size
+
 toggleColor:
     checkedToggleColor
     uncheckedToggleColor
@@ -30,3 +38,17 @@ barColor:
 labelColor:
     checkedLabelColor
     uncheckedLabelColor
+
+
+PowerBIDefault
+    size: 40x20
+    innerPadding: 5
+    toggleSize: 10x10
+    border-radius: ?
+
+    outline: dark
+    on (toggle right): background dark; text, toggle white
+    off (toggle left): background white; text, toggle dark
+
+    dark : #605e5c
+    dark:hover : #252423
