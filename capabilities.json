@@ -1,11 +1,9 @@
 {
-    "dataRoles": [
-        {
-            "displayName": "Values",
-            "name": "values",
-            "kind": "Grouping"
-        }
-    ],
+    "dataRoles": [{
+        "displayName": "Values",
+        "name": "values",
+        "kind": "Grouping"
+    }],
 
     "objects": {
         "general": {
@@ -18,28 +16,186 @@
                     }
                 }
             }
-        }
-    },
-
-    "dataViewMappings": [
-        {
-            "conditions": [
-                {
-                    "values": {
-                        "max": 1
+        },
+        "value": {
+            "displayName": "Value",
+            "properties": {
+                "defaultValue": {
+                    "displayName": "Default value",
+                    "type": {
+                        "bool": true
                     }
                 }
-            ],
-            "categorical": {
-                "categories": {
-                    "for": {
-                        "in": "values"
-                    },
-                    "dataReductionAlgorithm": {
-                        "top": {}
+            }
+        },
+        "label": {
+            "displayName": "Label",
+            "properties": {
+                "position": {
+                    "displayName": "Position",
+                    "type": {
+                        "enumeration": [{
+                            "value": "0",
+                            "displayName": "Off"
+                        }, {
+                            "value": "1",
+                            "displayName": "Inside"
+                        }, {
+                            "value": "2",
+                            "displayName": "Top"
+                        }, {
+                            "value": "3",
+                            "displayName": "Bottom"
+                        }, {
+                            "value": "4",
+                            "displayName": "Before"
+                        }, {
+                            "value": "5",
+                            "displayName": "After"
+                        }]
+                    }
+                },
+                "checkedFontColor": {
+                    "displayName": "Checked font color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "uncheckedFontColor": {
+                    "displayName": "Unchecked font color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "caption": {
+                    "displayName": "Caption",
+                    "type": {
+                        "enumeration": [{
+                            "value": "0",
+                            "displayName": "Off / On"
+                        }, {
+                            "value": "1",
+                            "displayName": "No / Yes"
+                        }]
+                    }
+                }
+            }
+        },
+        "appearance": {
+            "displayName": "Appearance",
+            "properties": {
+                "theme": {
+                    "displayName": "Theme",
+                    "type": {
+                        "enumeration": [{
+                            "value": "0",
+                            "displayName": "PowerBI"
+                        }, {
+                            "value": "1",
+                            "displayName": "MaterialUI"
+                        }, {
+                            "value": "2",
+                            "displayName": "Bootstrap"
+                        }]
+                    }
+                },
+                "size": {
+                    "displayName": "Size",
+                    "type": {
+                        "enumeration": [{
+                            "value": "0",
+                            "displayName": "Small"
+                        }, {
+                            "value": "1",
+                            "displayName": "Medium"
+                        }, {
+                            "value": "2",
+                            "displayName": "Large"
+                        }, {
+                            "value": "3",
+                            "displayName": "Huge"
+                        }]
+                    }
+                },
+                "checkedFgColor": {
+                    "displayName": "Checked FG color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "checkedBgColor": {
+                    "displayName": "Checked BG color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "uncheckedFgColor": {
+                    "displayName": "Unchecked FG color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "uncheckedBgColor": {
+                    "displayName": "Unchecked BG color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-    ]
+    },
+
+    "dataViewMappings": [{
+        "conditions": [{
+            "values": {
+                "max": 1
+            }
+        }],
+        "categorical": {
+            "categories": {
+                "for": {
+                    "in": "values"
+                },
+                "dataReductionAlgorithm": {
+                    "top": {}
+                }
+            }
+        }
+    }]
 }

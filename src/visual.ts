@@ -1,3 +1,4 @@
+
 "use strict";
 
 import "./../style/visual.less";
@@ -5,99 +6,43 @@ import powerbi from "powerbi-visuals-api";
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-import ISelectionManager = powerbi.extensibility.ISelectionManager;
+import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
+import VisualObjectInstance = powerbi.VisualObjectInstance;
+import DataView = powerbi.DataView;
+import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+
 import { VisualSettings } from "./settings";
-
 export class Visual implements IVisual {
-  private target: HTMLElement;
-  private selectionManager: ISelectionManager;
-  private selectedValue: boolean = false;
-  private host: IVisualHost;
-  private isEventUpdate: boolean = false;
-  private settings: VisualSettings;
-  private valueText: Text;
+    private target: HTMLElement;
+    private settings: VisualSettings;
 
-  constructor(options: VisualConstructorOptions) {
-    this.target = options.element;
-    this.host = options.host;
-    this.selectionManager = options.host.createSelectionManager();
-
-    // this.target = options.element;
-    // if (document) {
-    //   const switchContainer: HTMLElement = document.createElement("label");
-    //   switchContainer.classList.add("switch");
-
-    //   const switchInput: HTMLInputElement = document.createElement("input");
-    //   switchInput.classList.add("checkbox-input");
-    //   switchInput.type = "checkbox";
-
-    //   const switchSlider: HTMLElement = document.createElement("span");
-    //   switchSlider.classList.add("slider");
-    //   switchSlider.classList.add("round");
-
-    //   switchContainer.appendChild(switchInput);
-    //   switchContainer.appendChild(switchSlider);
-
-    //   this.target.appendChild(switchContainer);
-    // }
-  }
-
-  public update(options: VisualUpdateOptions) {
-    if (options.type && !this.isEventUpdate) {
-      this.init(options);
-    }
-  }
-
-  public init(options: VisualUpdateOptions) {
-    if (
-      !options ||
-      !options.dataViews ||
-      !options.dataViews[0] ||
-      !options.dataViews[0].categorical ||
-      !options.dataViews[0].categorical.categories ||
-      !options.dataViews[0].categorical.categories[0]
-    ) {
-      return;
+    constructor(options: VisualConstructorOptions) {
+        console.log('Visual constructor', options);
+        this.target = options.element;
+        if (document) {
+            const switchMain: HTMLElement = document.createElement("label");
+            switchMain.classList.add("switch");
+            const checkboxInput: HTMLInputElement  = document.createElement("input");
+            checkboxInput.classList.add("checkbox-input");
+            checkboxInput.type = "checkbox";
+            const switchSlider: HTMLElement = document.createElement("span");
+            switchSlider.classList.add("slider");
+            switchMain.appendChild(checkboxInput);
+            switchMain.appendChild(switchSlider);
+            this.target.appendChild(switchMain);
+        }
     }
 
-    while (this.target.firstChild) {
-      this.target.removeChild(this.target.firstChild);
+    public update(options: VisualUpdateOptions) {
+        this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
+        console.log('Visual update', options);
     }
 
-    // clear out any previous selection ids
-    this.selectedValue = false;
+    private static parseSettings(dataView: DataView): VisualSettings {
+        return <VisualSettings>VisualSettings.parse(dataView);
+    }
 
-    // get the category data.
-    const category = options.dataViews[0].categorical.categories[0];
-    const values = category.values;
-
-    // build selection ids to be used by filtering capabilities later
-    values.forEach((item: number, index: number) => {
-      // this.selectionIds[item] = this.host
-      //   .createSelectionIdBuilder()
-      //   .withCategory(category, index)
-      //   .createSelectionId();
-
-      const value = item.toString();
-
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.value = value;
-      radio.name = "values";
-      radio.onclick = function (ev) {
-        this.isEventUpdate = true; // This is checked in the update method. If true it won't re-render, this prevents and infinite loop
-        this.selectionManager.clear(); // Clean up previous filter before applying another one.
-
-        // Find the selectionId and select it
-        this.selectionManager
-          .select(this.selectedValue);
-
-        // This call applys the previously selected selectionId
-        this.selectionManager.applySelectionFilter();
-      }.bind(this);
-
-      this.target.appendChild(radio);
-    });
-  }
+    public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
+        return VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
+    }
 }
